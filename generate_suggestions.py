@@ -13,7 +13,7 @@ Given this Python PR diff, generate suggested unit tests and doc explanations:
 """
 
 response = requests.post(
-    "https://api.perplexity.ai/v1/chat/completions",
+    "https://api.perplexity.ai/chat/completions",
     headers={
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
