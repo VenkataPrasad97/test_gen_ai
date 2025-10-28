@@ -13,13 +13,13 @@ Given this Python PR diff, generate suggested unit tests and doc explanations:
 """
 
 response = requests.post(
-    "https://api.perplexity.ai/v1/chat/completions",
+    "https://api.perplexity.ai/chat/completions",
     headers={
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     },
     json={
-        "model": "llama-3-sonar-large-32k-online",  # Optionally change model name if needed
+        "model": "sonar",  # Optionally change model name if needed
         "messages": [{
             "role": "user",
             "content": prompt

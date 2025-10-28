@@ -7,6 +7,8 @@ on:
 jobs:
   suggest-tests-docs:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,6 +40,8 @@ jobs:
           header: "🤖 AI Suggestions"
           message: |
             $(cat suggestions.txt)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Only include if you use Django + DRF Spectacular
       # - name: Export OpenAPI Spec
