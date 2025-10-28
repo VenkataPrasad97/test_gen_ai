@@ -28,11 +28,9 @@ response = requests.post(
     },
     timeout=60
 )
-print("HTTP Status Code:", response.status_code)
-print("Raw Response:", response.text)
 
 result = response.json()
 ai_text = result.get("choices", [{}])[0].get("message", {}).get("content", "No result!")
-
+print(ai_text)
 with open("suggestions.txt", "w") as sf:
     sf.write(ai_text)
