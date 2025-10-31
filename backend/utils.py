@@ -16,3 +16,9 @@ def get_greeting(name):
     if not name:
         return "Hello, stranger!"
     return f"Hello, {name}!"
+
+def subtract_numbers(a, b):
+    """
+    Subtracts b from a.
+    """
+    return a - b
