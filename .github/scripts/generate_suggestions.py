@@ -82,6 +82,14 @@ def handle_python_changes(diff_content, changed_files, openapi_content):
     if len(py_diff) > 4000:
         py_diff = py_diff[:4000] + "\n... (diff truncated)"
 
+    # --- THIS IS THE FIX ---
+    # Build the context string separately to avoid backslash in f-string expression
+    api_context = ""
+    if openapi_content:
+        # We create the string with \n here, outside the main prompt's {expression}
+        api_context = f"Context from openapi.yaml:\n{openapi_content[:1000]}"
+    # --- END FIX ---
+
     prompt = f"""
     You are a senior Python SWE reviewing a PR. Given the following git diff for Python files, generate suggested Pytest unit tests.
     
@@ -90,7 +98,7 @@ def handle_python_changes(diff_content, changed_files, openapi_content):
     - Cover edge cases and error conditions implied by the code.
     - Return *only* the test code blocks, formatted in Markdown, with suggested file paths.
     
-    {'Context from openapi.yaml:\n' + openapi_content[:1000] if openapi_content else ''}
+    {api_context}
     
     Git Diff:
     {py_diff}

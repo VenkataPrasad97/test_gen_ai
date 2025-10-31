@@ -25,6 +25,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Tests and Generate Coverage Report
+      PYTHONPATH: .  # <-- ADD THIS
         run: |
           pytest --cov=. --cov-report=xml
           # This runs all tests and creates a 'coverage.xml' file
