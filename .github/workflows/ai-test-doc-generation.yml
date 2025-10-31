@@ -8,29 +8,53 @@ jobs:
   suggest-tests-docs:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
+      pull-requests: write # Needed to post comments
+      contents: read      # Needed to checkout code
+      
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Needed to get the diff base
 
       - name: Get PR Diff
+        id: diff
         run: |
           git diff --unified=0 ${{ github.base.sha }} ${{ github.head.sha }} > pr.diff
+          echo "diff_path=pr.diff" >> $GITHUB_OUTPUT
+
+      - name: Get Changed Files List
+        id: changed_files
+        run: |
+          git diff --name-only ${{ github.base.sha }} ${{ github.head.sha }} > changed_files.list
+          echo "list_path=changed_files.list" >> $GITHUB_OUTPUT
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install Backend Dependencies
+      - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Backend Tests and Coverage
-        run: pytest --cov=. --maxfail=1 --disable-warnings > pytest-report.txt
+      # Optional: Run tests here if you want to feed the coverage report to the AI
+      # We can add this in v2. For now, let's keep it simple.
+
+      # Optional: Build OpenAPI spec if you have it
+      # - name: Build OpenAPI (DRF)
+      #   id: openapi
+      #   run: |
+      #     python manage.py spectacular --file openapi.yaml
+      #     echo "openapi_path=openapi.yaml" >> $GITHUB_OUTPUT
 
       - name: Generate AI Suggestions
-        run: python generate_suggestions.py
+        id: suggestions
+        run: |
+          python .github/scripts/generate_suggestions.py \
+            --diff ${{ steps.diff.outputs.diff_path }} \
+            --changed-files ${{ steps.changed_files.outputs.list_path }} \
+            --out suggestions.md \
+            # --openapi ${{ steps.openapi.outputs.openapi_path }}
         env:
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
 
@@ -38,11 +62,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: "🤖 AI Suggestions"
-          message: |
-            $(cat suggestions.txt)
+          # Use 'path' to read the markdown file directly
+          path: suggestions.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Only include if you use Django + DRF Spectacular
-      # - name: Export OpenAPI Spec
-      #   run: python manage.py spectacular --file openapi.yaml
