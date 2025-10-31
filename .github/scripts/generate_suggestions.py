@@ -6,12 +6,12 @@ from pathlib import Path
 # --- Configuration ---
 # Load Perplexity API Key from environment variable (set via GitHub Secrets!)
 API_KEY = os.getenv("PERPLEXITY_API_KEY")
-API_URL = "https://api.perplexity.ai/chat/completions"
-MODEL_NAME = "sonar-small-online" # Using a fast and capable model
+API_URL = "https://api.perplexity.ai/v1/chat/completions"
+MODEL_NAME = "sonar" # Using a fast and capable model
 
 # --- Main Functions ---
 
-def call_llm(prompt, max_tokens=1024):
+def call_llm(prompt, max_tokens=800):
     """
     Sends a prompt to the Perplexity API and returns the text response.
     """
