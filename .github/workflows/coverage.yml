@@ -13,6 +13,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
+      # All steps are now indented one level deeper than 'steps:'
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -25,17 +26,16 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Tests and Generate Coverage Report
-      PYTHONPATH: .  # <-- ADD THIS
+        env:
+          PYTHONPATH: .  # This fixes the Python import error
         run: |
           pytest --cov=. --cov-report=xml
-          # This runs all tests and creates a 'coverage.xml' file
 
       - name: Upload Coverage Report to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./coverage.xml  # Path to the report we just generated
+          files: ./coverage.xml
           fail_ci_if_error: true
           verbose: true
         env:
-          # This token is required to securely upload the report
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
