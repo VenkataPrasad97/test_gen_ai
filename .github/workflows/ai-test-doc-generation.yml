@@ -20,15 +20,25 @@ jobs:
       - name: Get PR Diff
         id: diff
         run: |
-          git diff --unified=0 ${{ github.base.sha }} ${{ github.head.sha }} > pr.diff
+          # This is a more reliable way to get the PR's diff
+          git diff --unified=0 ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} > pr.diff
           echo "diff_path=pr.diff" >> $GITHUB_OUTPUT
 
       - name: Get Changed Files List
         id: changed_files
         run: |
-          git diff --name-only ${{ github.base.sha }} ${{ github.head.sha }} > changed_files.list
+          git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} > changed_files.list
           echo "list_path=changed_files.list" >> $GITHUB_OUTPUT
 
+      # Add this step to see what's in the files (for debugging)
+      - name: Debug file contents
+        run: |
+          echo "--- contents of pr.diff ---"
+          cat pr.diff
+          echo "--- contents of changed_files.list ---"
+          cat changed_files.list
+          echo "---------------------------"
+          
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
