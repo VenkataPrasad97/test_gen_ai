@@ -22,3 +22,11 @@ def subtract_numbers(a, b):
     Subtracts b from a.
     """
     return a - b
+
+def divide_numbers(a, b):
+    """
+    Divides a by b. Raises ZeroDivisionError if b is 0.
+    """
+    if b == 0:
+        raise ZeroDivisionError("Cannot divide by zero")
+    return a / b
