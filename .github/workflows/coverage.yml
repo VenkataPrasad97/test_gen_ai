@@ -1,0 +1,41 @@
+# .github/workflows/coverage.yml
+name: Code Coverage & Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read # To check out the code
+  checks: write  # To post the "pass/fail" status back to the PR
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Tests and Generate Coverage Report
+      PYTHONPATH: .  # <-- ADD THIS
+        run: |
+          pytest --cov=. --cov-report=xml
+          # This runs all tests and creates a 'coverage.xml' file
+
+      - name: Upload Coverage Report to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml  # Path to the report we just generated
+          fail_ci_if_error: true
+          verbose: true
+        env:
+          # This token is required to securely upload the report
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
